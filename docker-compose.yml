@@ -1,0 +1,19 @@
+version: '3.9'
+services:
+  redis:
+    image: redis:alpine
+    # image: redis/redis-stack:latest
+    ports:
+      - "6379:6379"
+    # Web GUI if redis-stack
+    #   - "8001:8001"
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: ${PG_DB}
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
