@@ -54,6 +54,7 @@ during authentication using Redis with TTL, and more.
 You can modify `docker-compose.yml` to set Redis with Web GUI or not.
 
 3. **Clone the Repository**
+
 4. **Install Dependencies**
 
   ```bash
@@ -150,7 +151,7 @@ requests.
 
 ## Documentation
 
-You can generate Sphinx documentation for this project.
+### You can generate Sphinx documentation for this project.
 
 You can modify file `docs\conf.py` by changing theme:
 
@@ -158,7 +159,7 @@ You can modify file `docs\conf.py` by changing theme:
 html_theme = 'classic'
 ```
 
-Build documentation
+### Build documentation
 
 **Windows**
 
@@ -166,29 +167,31 @@ Build documentation
  .\make.bat html
 ```
 
-**macOS / Linux**
+**macOS or Linux**
 
 ```bash
  sphinx-build -M html ./docs ./docs/_build
 ```
 
-The HTML pages with documentation are in docs/_build/html.
+**The HTML pages with documentation are in `docs/_build/html`.**
 
 ## Testing
 
 You can run unit tests and end-to-end tests for this project.
 
-Run unit tests:
+### Run one unit test from the `tests` dir:
 
 ```bash
-pytest tests/test_unit_repository_contacts.py -v
+pytest tests/test_u_repository_contacts.py -v
 ```
 
-Check coverage:
+### Check coverage:
 
 ```bash
  pytest --cov=repository/
 ```
+
+**Result:**
 
 ```
 ---------- coverage: platform darwin, python 3.11.7-final-0 ----------
@@ -200,23 +203,23 @@ repository/users.py         42      2    95%
 TOTAL                      120      7    94%
 ```
 
-Coverage HTML written to dir htmlcov
+### Coverage HTML written to dir `htmlcov`:
 
 ```bash
 pytest --cov=repository/ --cov-report html
 ```
 
-Run all tests:
+### Run all tests in the `tests` dir:
 
 ```bash
-pytest tests/test* -v
+pytest tests/test_* -v
 ```
 
 <details>
 
-<summary>All Test result</summary>
+<summary>All tests result (expand)</summary>
 
-### Log
+### Execution tsts log
 
 ```
 collected 52 items                                                                                       
@@ -252,7 +255,7 @@ tests/test_e2e_users.py::test_avatar_authorized PASSED                          
 tests/test_u_repository_contacts.py::TestAsyncContact::test_delete_contact PASSED                  [ 55%]
 tests/test_u_repository_contacts.py::TestAsyncContact::test_delete_not_existed_contact PASSED      [ 57%]
 tests/test_u_repository_contacts.py::TestAsyncContact::test_get_birthdays PASSED                   [ 59%]
-tests/test_u_repository_contacts.py::TestAsyncContact::test_get_birthdays_no_contacts_return PASSED  61%]
+tests/test_u_repository_contacts.py::TestAsyncContact::test_get_birthdays_no_contacts_return PASSED[ 61%]
 tests/test_u_repository_contacts.py::TestAsyncContact::test_get_contact PASSED                     [ 63%]
 tests/test_u_repository_contacts.py::TestAsyncContact::test_get_contact_by_email PASSED            [ 65%]
 tests/test_u_repository_contacts.py::TestAsyncContact::test_get_contact_by_phone PASSED            [ 67%]
@@ -284,6 +287,7 @@ tests/test_unit_repository_users.py::TestAsyncUser::test_update_token PASSED    
 - `db.py`: Contains the database session manager and a dependency to get the database session.
 - `docs`: Contains the Sphinx documentation for the project.
 - `entity/models.py`: Defines the SQLAlchemy models for users and contacts.
+- `htmlcov`: Results of the coverage tests
 - `main.py`: The entry point of the application. It creates the FastAPI application and includes the routers for
   authentication and contacts.
 - `migration/env.py`: Contains the Alembic environment configuration.
