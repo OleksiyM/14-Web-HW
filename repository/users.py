@@ -1,6 +1,7 @@
-"""User Management
-
-Provides functions for managing user accounts, including updating refresh tokens and creating new users."""
+"""
+User Management
+Provides functions for managing user accounts, including updating refresh tokens and creating new users.
+"""
 
 from fastapi import Depends
 from libgravatar import Gravatar
