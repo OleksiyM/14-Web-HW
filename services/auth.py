@@ -16,6 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from conf.config import config
 from db import get_db
 from repository import users as repository_users
+from conf import messages
 
 
 class Auth:
@@ -65,13 +66,13 @@ class Auth:
             if payload['scope'] == 'refresh_token':
                 email = payload['sub']
                 return email
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Invalid scope for token')
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.INVALID_SCOPE_FOR_TOKEN)
         except JWTError:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Could not validate credentials')
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.UNABLE_VALIDATE_CREDENTIALS)
 
     async def get_current_user(self, token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)):
         credentials_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                                              detail='Could not validate credentials',
+                                              detail=messages.UNABLE_VALIDATE_CREDENTIALS,
                                               headers={"WWW-Authenticate": "Bearer"}, )
 
         try:
@@ -118,7 +119,7 @@ class Auth:
         except JWTError as err:
             print(f"Error: {err}")
             raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                                detail="Invalid token for email verification")
+                                detail=messages.INVALID_TOKEN)
 
 
 auth_service = Auth()

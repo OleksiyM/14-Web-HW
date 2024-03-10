@@ -50,14 +50,9 @@ async def get_current_user(file: UploadFile = File(),
     :param db: AsyncSession: Get the database session
     :return: A user
     """
-    pubic_id = f"HW-13/{user.email}"
-    # res = cloudinary.uploader.upload(file.file, pubic_id=pubic_id, overwrite=True)
+    # pubic_id = f"HW-13/{user.email}"
     res = cloudinary.uploader.upload(file.file, overwrite=True)
     # print(f"{res=}")
-    # res_url = cloudinary.CloudinaryImage(pubic_id).build_url(
-    #     width=600, height=600, crop="fill", version=res.get("version")
-    # )
-    # res_url = cloudinary.CloudinaryImage(pubic_id).build_url(version=res.get("version"))
     res_url = res.get("secure_url")
     user = await repository_users.update_avatar_url(user.email, res_url, db)
     auth_service.cache.set(user.email, pickle.dumps(user))

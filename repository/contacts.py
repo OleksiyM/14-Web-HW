@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from entity.models import Contact, User
 from schemas.contacts import ContactSchema, ContactResponseSchema
+from conf import messages
 
 
 async def get_contacts(limit: int, offset: int, db: AsyncSession, user: User) -> [Contact]:
@@ -69,7 +70,7 @@ async def update_contact(contact_id: int, body: ContactSchema, db: AsyncSession,
     contact = result.scalar_one_or_none()
 
     if not contact:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contact not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.CONTACT_NOT_FOUND)
 
     # contact_email = await get_contact_by_email(contact.email, db)
     # if contact_email and contact_email.id != contact.id:  # Ignore conflicting email for same contact
@@ -98,7 +99,7 @@ async def update_contact(contact_id: int, body: ContactSchema, db: AsyncSession,
         await db.commit()
         await db.refresh(contact)
     except:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Contact already in use")
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=messages.CONTACT_IN_USE)
 
     return contact
 
