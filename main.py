@@ -40,27 +40,26 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# @app.middleware("http")
+# async def ban_ips(request: Request, call_next: Callable):
+#     ip = ip_address(request.client.host)
+#     if ip in banned_ips:
+#         return JSONResponse(status_code=status.HTTP_403_FORBIDDEN,
+#                             content={"detail": "IP address is banned"})
+#     response = await call_next(request)
+#     return response
 
-@app.middleware("http")
-async def ban_ips(request: Request, call_next: Callable):
-    ip = ip_address(request.client.host)
-    if ip in banned_ips:
-        return JSONResponse(status_code=status.HTTP_403_FORBIDDEN,
-                            content={"detail": "IP address is banned"})
-    response = await call_next(request)
-    return response
 
-
-@app.middleware("http")
-async def user_agent_ban(request: Request, call_next: Callable):
-    user_agent = request.headers.get("user-agent")
-    # print(f"User-agent: {user_agent}")
-    for agent_banned in user_agent_ban_list:
-        if re.search(agent_banned, user_agent):
-            return JSONResponse(status_code=status.HTTP_403_FORBIDDEN,
-                                content={"detail": "User-agent is banned"}, )
-    response = await call_next(request)
-    return response
+# @app.middleware("http")
+# async def user_agent_ban(request: Request, call_next: Callable):
+#     user_agent = request.headers.get("user-agent")
+#     # print(f"User-agent: {user_agent}")
+#     for agent_banned in user_agent_ban_list:
+#         if re.search(agent_banned, user_agent):
+#             return JSONResponse(status_code=status.HTTP_403_FORBIDDEN,
+#                                 content={"detail": "User-agent is banned"}, )
+#     response = await call_next(request)
+#     return response
 
 
 BASE_DIR = Path(__file__).parent
