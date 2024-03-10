@@ -9,6 +9,7 @@ from fastapi_mail.errors import ConnectionErrors
 from pydantic import EmailStr
 
 from conf.config import config
+from conf import messages
 from services.auth import auth_service
 
 conf = ConnectionConfig(MAIL_USERNAME=config.MAIL_USERNAME,
@@ -35,7 +36,7 @@ async def send_email(email: EmailStr, username: str, host: str):
     # print(f"Sending email to {email}")
     try:
         token_verification = auth_service.create_email_token({"sub": email})
-        message = MessageSchema(subject="Confirm you email",
+        message = MessageSchema(subject=messages.EMAIL_CONFIRMATION_SUBJECT,
                                 recipients=[email],
                                 template_body={"host": host, "username": username, "token": token_verification},
                                 subtype=MessageType.html)
