@@ -11,6 +11,7 @@ from services.email import send_email
 from schemas.users import UserSchema, UserResponse, TokenSchema, RequestEmail
 from repository import users as repository_users
 from db import get_db
+from conf import messages
 
 router = APIRouter(prefix='/auth', tags=['auth'])
 get_refresh_token = HTTPBearer()
@@ -30,7 +31,7 @@ async def signup(body: UserSchema, bt: BackgroundTasks, request: Request, db: As
     """
     exist_user = await repository_users.get_user_by_email(body.email, db)
     if exist_user:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='User with this email already exists')
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=messages.ACCOUNT_EXIST)
     body.password = auth_service.get_password_hash(body.password)
     new_user = await repository_users.create_user(body, db)
     bt.add_task(send_email, new_user.email, new_user.username, str(request.base_url))
@@ -49,11 +50,11 @@ async def login(body: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = 
     user = await repository_users.get_user_by_email(body.username, db)
     # print(f'{body.username}, {body.password}')
     if user is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Invalid email!')
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.INVALID_EMAIL)
     if not user.confirmed:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Email not confirmed')
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.EMAIL_NOT_CONFIRMED)
     if not auth_service.verify_password(body.password, user.password):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Invalid password!')
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.INVALID_PASSWORD)
     access_token = await auth_service.create_access_token(data={"sub": user.email})
     new_refresh_token = await auth_service.create_refresh_token(data={"sub": user.email})
     await repository_users.update_token(user, new_refresh_token, db)
@@ -76,7 +77,7 @@ async def refresh_token(credentials: HTTPAuthorizationCredentials = Depends(get_
     user = await repository_users.get_user_by_email(email, db)
     if user.refresh_token != token:
         await repository_users.update_token(user, None, db)
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Invalid refresh token')
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.INVALID_REFRESH_TOKEN)
 
     access_token = await auth_service.create_access_token(data={"sub": email})
     refresh_token = await auth_service.create_refresh_token(data={"sub": email})
@@ -96,7 +97,7 @@ async def confirmed_email(token: str, db: AsyncSession = Depends(get_db)):
     email = await auth_service.get_email_from_token(token)
     user = await repository_users.get_user_by_email(email, db)
     if user is None:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email verification error")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=messages.EMAIL_VERIFICATION_ERROR)
     if user.confirmed:
         return {"message": "Email already confirmed"}
     await repository_users.confirmed_email(email, db)

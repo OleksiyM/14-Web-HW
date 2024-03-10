@@ -12,6 +12,7 @@ from services.auth import auth_service
 from services.roles import RoleAccess
 from schemas.contacts import ContactSchema, ContactResponseSchema
 from conf.config import config
+from conf import messages
 
 router = APIRouter(prefix='/contacts', tags=['contacts'])
 
@@ -33,7 +34,7 @@ async def create_contact(contact: ContactSchema = Body(...), db: AsyncSession = 
     try:
         contact = await repository_contacts.create_contact(contact, db, user)
     except:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Contact already exists')
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=messages.CONTACT_ALREADY_EXISTS)
     return contact
 
 
@@ -55,7 +56,7 @@ async def search_contacts(limit: int = Query(10, ge=10, le=100),
     """
     contacts = await repository_contacts.search_contacts(limit, offset, q, db, user)
     if contacts is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Contacts not found')
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.CONTACT_NOT_FOUND)
     return contacts
 
 
@@ -71,7 +72,7 @@ async def get_birthdays(db: AsyncSession = Depends(get_db), user: User = Depends
     """
     contacts_with_birthdays = await repository_contacts.get_birthdays(db, user)
     if contacts_with_birthdays is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Contacts not found')
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.CONTACT_NOT_FOUND)
     return contacts_with_birthdays
 
 
@@ -90,7 +91,7 @@ async def get_contacts(limit: int = Query(10, ge=10, le=100),
     """
     contacts = await repository_contacts.get_contacts(limit, offset, db, user)
     if contacts is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Contacts not found')
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.CONTACT_NOT_FOUND)
     return contacts
 
 
@@ -106,7 +107,7 @@ async def get_contact(contact_id: int = Path(ge=1), db: AsyncSession = Depends(g
     """
     contact = await repository_contacts.get_contact(contact_id, db, user)
     if contact is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Contact not found')
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.CONTACT_NOT_FOUND)
     return contact
 
 
@@ -132,7 +133,7 @@ async def update_contact(contact_id: int = Path(ge=1), body: ContactSchema = Bod
         print(f'Error: {e}')
 
     if not updated_contact:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contact not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.CONTACT_NOT_FOUND)
 
     return updated_contact
 
