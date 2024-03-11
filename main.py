@@ -88,14 +88,28 @@ templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request):
-    """Returns a welcome message for the API"""
+    """Returns a welcome htm page for the API
+
+    :param: request
+    :type request: Request
+    :return: html page
+    :rtype: templates.TemplateResponse
+    """
     # return {"message": "Contacts Application"}
     return templates.TemplateResponse("index.html", {"request": request, "about_app": "Contacts App main page"})
 
 
 @app.get("/api/healthchecker")
 async def healthchecker(db: AsyncSession = Depends(get_db)):
-    """Checks the health of the database"""
+    """Checks the health of the database
+
+    :param: db
+    :type db: AsyncSession
+    :return: A message
+    :rtype: dict
+    :raises: HTMLException with status code 500
+
+    """
     if db is None:
         raise HTTPException(status_code=500, detail="Database is not configured correctly")
 
