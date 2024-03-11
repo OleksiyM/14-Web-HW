@@ -41,18 +41,19 @@ def test_avatar_not_authorized(client, monkeypatch):
         assert response.json() == {"detail": "Method Not Allowed"}
 
 
-def test_avatar_authorized(client, get_token, monkeypatch):
+def test_avatar_authorized_with_valid_token(client, get_token, monkeypatch):
     with patch.object(auth_service, 'cache') as redis_mock:
         redis_mock.get.return_value = None
         monkeypatch.setattr("fastapi_limiter.FastAPILimiter.redis", AsyncMock())
         monkeypatch.setattr("fastapi_limiter.FastAPILimiter.identifier", AsyncMock())
         monkeypatch.setattr("fastapi_limiter.FastAPILimiter.http_callback", AsyncMock())
 
-        mock_upload_url = "https://example.com/avatar.jpg"
-        monkeypatch.setattr(cloudinary.uploader, 'upload', AsyncMock(return_value={'secure_url': mock_upload_url}))
+        token = get_token  # Get a valid authentication token
+        headers = {"Authorization": f"Bearer {token}"}
 
-        token = get_token
+        # real file uploaded to the Cloudinary service
+        with open("./tests/test_image.jpg", "rb") as image_file:
+            response = client.patch("api/users/avatar", headers=headers, files={"file": image_file})
 
-        file_to_upload = {
-            'file': ('avatar.jpg', b'file_content', 'image/jpeg')
-        }
+        assert response.status_code == 200
+        assert response.json()["avatar"] is not None
