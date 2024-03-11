@@ -23,12 +23,20 @@ async def signup(body: UserSchema, bt: BackgroundTasks, request: Request, db: As
     The signup function creates a new user in the database.
     It takes in a UserSchema object, which is validated by pydantic.
     If the email already exists, it raises an HTTPException with status code 409 (Conflict).
-    :param body: UserSchema: Validate the request body
-    :param bt: BackgroundTasks: Add a task to the background tasks queue (send e-mail)
-    :param request: Request: Get the base url of the application
-    :param db: AsyncSession: Get the database session
+
+    :param body: Validate the request body
+    :type: UserSchema
+    :param db: Get the database session
+    :type db: AsyncSession
+    :param bt: Add a task to the background tasks queue (send e-mail)
+    :type bt: BackgroundTasks
+    :param request: Get the base url of the application
+    :type request: Request
     :return: A user
+    :rtype: UserResponse
+    :raise: HTTPException with status code 409 when the email already exists
     """
+
     exist_user = await repository_users.get_user_by_email(body.email, db)
     if exist_user:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=messages.ACCOUNT_EXIST)
@@ -43,10 +51,16 @@ async def login(body: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = 
     """
     The login function takes in a username and password, validates them, and returns a token.
     If the username or password is incorrect, it raises an HTTPException with status code 401 (Unauthorized).
-    :param body: OAuth2PasswordRequestForm: Get the username and password from the request body
-    :param db: AsyncSession: Get the database session
+
+    :param body: Get the username and password from the request body
+    :type body: OAuth2PasswordRequestForm
+    :param db: Get the database session
+    :type db: AsyncSession
     :return: A token
+    :rtype: TokenSchema
+    :raise: HTTPException with status code 401 when the username or password is incorrect
     """
+
     user = await repository_users.get_user_by_email(body.username, db)
     # print(f'{body.username}, {body.password}')
     if user is None:
@@ -68,10 +82,16 @@ async def refresh_token(credentials: HTTPAuthorizationCredentials = Depends(get_
     """
     The refresh_token function takes in a refresh token, decodes it, and returns an access token.
     If the refresh token is invalid, it raises an HTTPException with status code 401 (Unauthorized).
-    :param credentials: HTTPAuthorizationCredentials: Get the refresh token from the request
-    :param db: AsyncSession: Get the database session
+
+    :param credentials: Get the refresh token from the request
+    :type credentials: HTTPAuthorizationCredentials
+    :param db: Get the database session
+    :type db: AsyncSession
     :return: A token
+    :rtype: TokenSchema
+    :raise: HTTPException with status code 401 when the refresh token is invalid
     """
+
     token = credentials.credentials
     email = await auth_service.decode_refresh_token(token)
     user = await repository_users.get_user_by_email(email, db)
@@ -90,10 +110,16 @@ async def confirmed_email(token: str, db: AsyncSession = Depends(get_db)):
     """
     The confirmed_email function takes in a token, decodes it, and returns a message.
     If the token is invalid, it raises an HTTPException with status code 400 (Bad Request).
-    :param token: str: Get the token from the URL
-    :param db: AsyncSession: Get the database session
+
+    :param token: Get the token from the URL
+    :type token: str
+    :param db: Get the database session
+    :type db: AsyncSession
     :return: A message
+    :rtype: dict
+    :raise: HTTPException with status code 400 if the token is invalid
     """
+
     email = await auth_service.get_email_from_token(token)
     user = await repository_users.get_user_by_email(email, db)
     if user is None:
@@ -112,12 +138,19 @@ async def request_email(body: RequestEmail,
     """
     The request_email function takes in an email, gets the user with that email, and sends an email to the user.
     If the user does not exist, it returns a message.
-    :param body: RequestEmail: Get the email from the request body
-    :param background_tasks: BackgroundTasks: Add a task to the background tasks queue (send e-mail)
-    :param request: Request: Get the base url of the application
-    :param db: AsyncSession: Get the database session
+
+    :param body: Get the email from the request body
+    :type body: RequestEmail
+    :param background_tasks: Add a task to the background tasks queue (send e-mail)
+    :type: BackgroundTasks
+    :param request: Get the base url of the application
+    :type request: Request
+    :param db: Get the database session
+    :type db: AsyncSession
     :return: A message
+    :rtype: dict
     """
+
     user = await repository_users.get_user_by_email(body.email, db)
 
     if user:
