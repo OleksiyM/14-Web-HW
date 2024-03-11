@@ -276,6 +276,7 @@ tests/test_unit_repository_users.py::TestAsyncUser::test_get_user_by_username PA
 tests/test_unit_repository_users.py::TestAsyncUser::test_update_avatar_url_success PASSED          [ 96%]
 tests/test_unit_repository_users.py::TestAsyncUser::test_update_avatar_url_user_not_found PASSED   [ 98%]
 tests/test_unit_repository_users.py::TestAsyncUser::test_update_token PASSED                       [100%]
+========================================== 52 passed in 2.15s ===========================================
 ```
 
 </details>
