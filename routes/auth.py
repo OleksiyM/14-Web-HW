@@ -125,9 +125,9 @@ async def confirmed_email(token: str, db: AsyncSession = Depends(get_db)):
     if user is None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=messages.EMAIL_VERIFICATION_ERROR)
     if user.confirmed:
-        return {"message": "Email already confirmed"}
+        return {"message": messages.EMAIL_CONFIRMED}
     await repository_users.confirmed_email(email, db)
-    return {"message": "Email confirmed successfully"}
+    return {"message": messages.EMAIL_CONFIRMED}
 
 
 @router.post('/request_email')
@@ -156,8 +156,8 @@ async def request_email(body: RequestEmail,
     if user:
         # print(f"{user.email}")
         if user.confirmed:
-            return {"message": "Email already confirmed"}
+            return {"message": messages.EMAIL_CONFIRMED}
         background_tasks.add_task(send_email, user.email, user.username, str(request.base_url))
-        return {"message": "Email confirmation sent successfully"}
+        return {"message": messages.EMAIL_CONFIRMATION_SENT}
     else:
-        return {"message": "User with this email does not exist"}
+        return {"message": messages.USER_EMAIL_NOT_EXIST}
