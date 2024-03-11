@@ -56,33 +56,10 @@ REST API routes Auth
   :show-inheritance:
 
 
-REST API service Auth
-=========================
-.. automodule:: services.auth
-  :members:
-  :undoc-members:
-  :show-inheritance:
-
 REST API service Email
 =========================
 .. automodule:: services.email
   :members:
   :undoc-members:
   :show-inheritance:
-
-REST API service Roles
-=========================
-.. automodule:: services.roles
-  :members:
-  :undoc-members:
-  :show-inheritance:
-
-
-REST API Database
-==========================
-.. automodule:: db
-  :members:
-  :undoc-members:
-  :show-inheritance:
-
 
