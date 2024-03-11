@@ -83,3 +83,11 @@ def test_validation_error_login(client):
     assert response.status_code == 422, response.text
     data = response.json()
     assert "detail" in data
+
+
+def test_request_email(client):
+    response = client.post("api/auth/request_email",
+                           data={"username": user_data.get("email")})
+    # assert response.status_code == 200, response.text :TODO check data
+    data = response.json()
+    # assert data["message"] == messages.EMAIL_CONFIRMATION_SENT

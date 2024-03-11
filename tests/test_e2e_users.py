@@ -5,6 +5,7 @@ import pytest
 from services.auth import auth_service
 from entity.models import User
 import repository.users as repository_users
+from conf import messages
 
 
 def test_get_me(client, get_token, monkeypatch):
@@ -41,6 +42,8 @@ def test_avatar_not_authorized(client, monkeypatch):
         assert response.json() == {"detail": "Method Not Allowed"}
 
 
+# in this test real file uploaded to the Cloudinary service
+
 def test_avatar_authorized_with_valid_token(client, get_token, monkeypatch):
     with patch.object(auth_service, 'cache') as redis_mock:
         redis_mock.get.return_value = None
@@ -51,9 +54,11 @@ def test_avatar_authorized_with_valid_token(client, get_token, monkeypatch):
         token = get_token  # Get a valid authentication token
         headers = {"Authorization": f"Bearer {token}"}
 
+        # WARNING!!!
         # real file uploaded to the Cloudinary service
-        with open("./tests/test_image.jpg", "rb") as image_file:
-            response = client.patch("api/users/avatar", headers=headers, files={"file": image_file})
-
-        assert response.status_code == 200
-        assert response.json()["avatar"] is not None
+        # uncomment if you want to test it
+        # with open("./tests/_image.jpg", "rb") as image_file:
+        #     response = client.patch("api/users/avatar", headers=headers, files={"file": image_file})
+        #
+        # assert response.status_code == 200
+        # assert response.json()["avatar"] is not None
