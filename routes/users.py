@@ -31,8 +31,13 @@ cloudinary.config(
 async def get_current_user(user: User = Depends(auth_service.get_current_user)):
     """
     Get current user.
-    :param user: User: Get the current user from the database
+
+    :param user:  Get the current user from the database
+    :type user : User
+    :param db: Get the database session
+    :type db: AsyncSession
     :return: A user
+    :rtype: UserResponse
     """
     return user
 
@@ -45,11 +50,17 @@ async def get_current_user(file: UploadFile = File(),
                            db: AsyncSession = Depends(get_db), ):
     """
     Get current user.
-    :param file: UploadFile: Get the file from the request
-    :param user: User: Get the current user from the database
-    :param db: AsyncSession: Get the database session
+
+    :param file: Get the file from the request
+    :type: UploadFile
+    :param user: Get the current user from the database
+    :type: User
+    :param db: Get the database session
+    :type db: AsyncSession
     :return: A user
+    :rtype: UserResponse
     """
+
     # pubic_id = f"HW-13/{user.email}"
     res = cloudinary.uploader.upload(file.file, overwrite=True)
     # print(f"{res=}")

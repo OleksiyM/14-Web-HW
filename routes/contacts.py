@@ -26,10 +26,16 @@ async def create_contact(contact: ContactSchema = Body(...), db: AsyncSession = 
                          user: User = Depends(auth_service.get_current_user), ):
     """
     Creates a contact for the current user. If the contact already exists, an HTTP 409 error is returned.
-    :param contact: ContactSchema: Validate the request body
-    :param db: AsyncSession: Get the database session
-    :param user: User: Get the current user
+
+    :param contact: Validate the request body
+    :type contact: ContactSchema
+    :param db: Get the database session
+    :type db: AsyncSession
+    :param user: Get the current user
+    :type user: User
     :return: A contact
+    :rtype: ContactResponseSchema
+    :raise: HTTPException with status code 409 when contact already exists
     """
     try:
         contact = await repository_contacts.create_contact(contact, db, user)
@@ -45,15 +51,25 @@ async def search_contacts(limit: int = Query(10, ge=10, le=100),
                           q: str = Query(min_length=3, max_length=50),
                           db: AsyncSession = Depends(get_db),
                           user: User = Depends(auth_service.get_current_user)):
-    """Searches for contacts by name, last name, e-mail.
-    If no contacts match the search query, an empty list is returned and raises an HTTP 404 error.
-    :param limit: int: Limit the number of contacts returned
-    :param offset: int: Skip the first n contacts
-    :param q: str: Search query
-    :param db: AsyncSession: Get the database session
-    :param user: User: Get the current user
-    :return: A list of contacts that match the search query.
     """
+    Searches for contacts by name, last name, e-mail.
+    If no contacts match the search query, an empty list is returned and raises an HTTP 404 error.
+
+    :param limit: Limit the number of contacts returned
+    :type limit: int
+    :param offset: Skip the first n contacts
+    :type offset: int
+    :param q: Search query
+    :type q: str
+    :param db: Get the database session
+    :type db: AsyncSession
+    :param user: Get the current user
+    :type user: User
+    :return: A list of contacts that match the search query
+    :rtype: list[ContactResponseSchema]
+    :raise: HTTPException with status code 404 when no contacts match the search query
+    """
+
     contacts = await repository_contacts.search_contacts(limit, offset, q, db, user)
     if contacts is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.CONTACT_NOT_FOUND)
@@ -66,10 +82,16 @@ async def get_birthdays(db: AsyncSession = Depends(get_db), user: User = Depends
     """
     Retrieves a list of contacts with birthdays for the current user.
     If no contacts with birthdays are found, an HTTP 404 error is raised.
-    :param db: AsyncSession: Get the database session
-    :param user: User: Get the current user
+
+    :param db: Get the database session
+    :type db: AsyncSession
+    :param user: Get the current user
+    :type user: User
     :return: A list of contacts with birthdays for the current user.
+    :rtype: list[ContactResponseSchema]
+    :raise: HTTPException with status code 404 when no contacts with birthdays are found.
     """
+
     contacts_with_birthdays = await repository_contacts.get_birthdays(db, user)
     if contacts_with_birthdays is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.CONTACT_NOT_FOUND)
@@ -82,13 +104,23 @@ async def get_contacts(limit: int = Query(10, ge=10, le=100),
                        offset: int = Query(0, ge=0),
                        db: AsyncSession = Depends(get_db),
                        user: User = Depends(auth_service.get_current_user)):
-    """Retrieves a list of contacts. If no contacts, an empty list is returned and raises an HTTP 404 error.
-    :param limit: int: Limit the number of contacts returned
-    :param offset: int: Skip the first n contacts
-    :param db: AsyncSession: Get the database session
-    :param user: User: Get the current user
-    :return: A list of contacts. If no contacts, an empty list is returned and raises an HTTP 404 error.
     """
+    Retrieves a list of contacts.
+    If no contacts, an empty list is returned and raises an HTTP 404 error.
+
+    :param limit: Limit the number of contacts returned
+    :type limit:  int
+    :param offset: Skip the first n contacts
+    :type offset: int
+    :param db: Get the database session
+    :type db: AsyncSession
+    :param user: Get the current user
+    :type user: User
+    :return: A list of contacts. If no contacts, an empty list is returned and raises an HTTP 404 error.
+    :rtype: list[ContactResponseSchema]
+    :raise: HTTPException with status code 404 when no contacts are found.
+    """
+
     contacts = await repository_contacts.get_contacts(limit, offset, db, user)
     if contacts is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.CONTACT_NOT_FOUND)
@@ -99,12 +131,21 @@ async def get_contacts(limit: int = Query(10, ge=10, le=100),
             dependencies=[Depends(RateLimiter(times=config.LIMIT_TIMES, seconds=config.LIMIT_SECONDS))], )
 async def get_contact(contact_id: int = Path(ge=1), db: AsyncSession = Depends(get_db),
                       user: User = Depends(auth_service.get_current_user)):
-    """Retrieves a contact by ID. If no contact is found, an HTTP 404 error is raised.
-    :param contact_id: int: Get the contact ID
-    :param db: AsyncSession: Get the database session
-    :param user: User: Get the current user
-    :return: A contact by ID. If no contact is found, an HTTP 404 error is raised.
     """
+    Retrieves a contact by ID.
+    If no contact is found, an HTTP 404 error is raised.
+
+    :param contact_id: Get the contact ID
+    :type contact_id: int
+    :param db: Get the database session
+    :type db: AsyncSession
+    :param user: Get the current user
+    :type user: User
+    :return: A contact by ID. If no contact is found, an HTTP 404 error is raised.
+    :rtype: ContactResponseSchema
+    :raise: HTTPException with status code 404 when no contact is found.
+    """
+
     contact = await repository_contacts.get_contact(contact_id, db, user)
     if contact is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.CONTACT_NOT_FOUND)
@@ -117,12 +158,21 @@ async def get_contact(contact_id: int = Path(ge=1), db: AsyncSession = Depends(g
 async def update_contact(contact_id: int = Path(ge=1), body: ContactSchema = Body(...),
                          db: AsyncSession = Depends(get_db),
                          user: User = Depends(auth_service.get_current_user)):
-    """Updates a contact by ID. If no contact is found, an HTTP 404 error is raised.
-    :param contact_id: int: Get the contact ID
-    :param body: ContactSchema: Validate the request body
-    :param db: AsyncSession: Get the database session
-    :param user: User: Get the current user
+    """
+    Updates a contact by ID.
+    If no contact is found, an HTTP 404 error is raised.
+
+    :param contact_id: Get the contact ID
+    :type contact_id: int
+    :param body: Validate the request body
+    :type body: ContactSchema
+    :param db: Get the database session
+    :type db: AsyncSession
+    :param user: Get the current user
+    :type user: User
     :return: A contact by ID. If no contact is found, an HTTP 404 error is raised.
+    :rtype: ContactResponseSchema
+    :raise: HTTPException with status code 404 when no contact is found.
     """
 
     # if not (body.first_name or body.last_name or body.email or body.phone):
@@ -143,10 +193,15 @@ async def update_contact(contact_id: int = Path(ge=1), body: ContactSchema = Bod
 async def delete_contact(contact_id: int = Path(ge=1), db: AsyncSession = Depends(get_db),
                          user: User = Depends(auth_service.get_current_user)):
     """Deletes a contact by ID
-    contact_id: int: Get the contact ID
-    db: AsyncSession: Get the database session
-    user: User: Get the current user
+
+    :param: contact_id: Get the contact ID
+    :type contact_id: int
+    :param: db: Get the database session
+    :type db: AsyncSession
+    :param: user: Get the current user
+    :type user: User
     :return: A contact by ID and 204 status code.
+    :rtype: ContactSchema
     """
     # contact = await repository_contacts.get_contact(contact_id, db)
     # if contact is None:
