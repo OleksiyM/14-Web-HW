@@ -222,7 +222,7 @@ pytest tests/test_* -v
 ### Execution tsts log
 
 ```
-collected 52 items                                                                                       
+collected 53 items                                                                                       
 
 tests/test_e2e_auth.py::test_signup PASSED                                                         [  1%]
 tests/test_e2e_auth.py::test_signup_duplicate_username PASSED                                      [  3%]
@@ -231,7 +231,8 @@ tests/test_e2e_auth.py::test_login PASSED                                       
 tests/test_e2e_auth.py::test_wrong_password_login PASSED                                           [  9%]
 tests/test_e2e_auth.py::test_wrong_email_login PASSED                                              [ 11%]
 tests/test_e2e_auth.py::test_validation_error_login PASSED                                         [ 13%]
-tests/test_e2e_contacts.py::test_get_contacts PASSED                                               [ 15%]
+tests/test_e2e_auth.py::test_request_email PASSED                                                  [ 15%]
+tests/test_e2e_contacts.py::test_get_contacts PASSED                                               [ 16%]
 tests/test_e2e_contacts.py::test_get_contacts_no_contacts PASSED                                   [ 17%]
 tests/test_e2e_contacts.py::test_get_contacts_not_authorize PASSED                                 [ 19%]
 tests/test_e2e_contacts.py::test_create_contact PASSED                                             [ 21%]
@@ -251,7 +252,7 @@ tests/test_e2e_contacts.py::test_delete_contact_by_id_not_authorized PASSED     
 tests/test_e2e_users.py::test_get_me PASSED                                                        [ 48%]
 tests/test_e2e_users.py::test_get_me_not_authorized PASSED                                         [ 50%]
 tests/test_e2e_users.py::test_avatar_not_authorized PASSED                                         [ 51%]
-tests/test_e2e_users.py::test_avatar_authorized PASSED                                             [ 53%]
+tests/test_e2e_users.py::test_avatar_authorized_with_valid_token PASSED                            [ 53%]
 tests/test_u_repository_contacts.py::TestAsyncContact::test_delete_contact PASSED                  [ 55%]
 tests/test_u_repository_contacts.py::TestAsyncContact::test_delete_not_existed_contact PASSED      [ 57%]
 tests/test_u_repository_contacts.py::TestAsyncContact::test_get_birthdays PASSED                   [ 59%]
@@ -276,7 +277,7 @@ tests/test_unit_repository_users.py::TestAsyncUser::test_get_user_by_username PA
 tests/test_unit_repository_users.py::TestAsyncUser::test_update_avatar_url_success PASSED          [ 96%]
 tests/test_unit_repository_users.py::TestAsyncUser::test_update_avatar_url_user_not_found PASSED   [ 98%]
 tests/test_unit_repository_users.py::TestAsyncUser::test_update_token PASSED                       [100%]
-========================================== 52 passed in 2.15s ===========================================
+========================================== 53 passed in 2.14s  ===========================================
 ```
 
 </details>
