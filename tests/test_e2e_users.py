@@ -14,10 +14,15 @@ def test_get_me(client, get_token, monkeypatch):
         monkeypatch.setattr("fastapi_limiter.FastAPILimiter.redis", AsyncMock())
         monkeypatch.setattr("fastapi_limiter.FastAPILimiter.identifier", AsyncMock())
         monkeypatch.setattr("fastapi_limiter.FastAPILimiter.http_callback", AsyncMock())
+
         token = get_token
+
         headers = {"Authorization": f"Bearer {token}"}
-        # response = client.get('api/users/me', headers=headers)
-        # assert response.status_code != 200, response.text
+
+        response = client.get("api/users/me", headers=headers)
+        assert response.status_code == 200, response.text
+        assert response.json() == {"id": 1, "username": "user", "email": "user@example.com", "avatar": None,
+                                   "role": "user"}
 
 
 def test_get_me_not_authorized(client, monkeypatch):
