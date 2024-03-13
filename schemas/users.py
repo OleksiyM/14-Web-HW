@@ -16,7 +16,7 @@ class UserResponse(BaseModel):
     id: int = 1
     username: str
     email: EmailStr
-    avatar: str
+    avatar: Optional[str] = None
     role: Role
 
     class Config:
