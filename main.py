@@ -23,9 +23,19 @@ from conf.config import config
 
 app = FastAPI()
 
+# with ip_address
+# banned_ips = [
+#     ip_address("192.168.0.210"),
+#     ip_address("192.168.0.68"),
+#     ip_address("10.10.10.10"),
+#     ip_address("127.0.0.1")
+# ]
+
+# ip_address as string
 banned_ips = [
-    ip_address("192.168.0.210"),
-    ip_address("10.10.10.10")
+    "192.168.0.210",
+    # "192.168.0.68",
+    "10.10.10.10",
 ]
 
 user_agent_ban_list = [r"Somebot", r"Python-urllib"]
@@ -40,26 +50,32 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# @app.middleware("http")
-# async def ban_ips(request: Request, call_next: Callable):
-#     ip = ip_address(request.client.host)
-#     if ip in banned_ips:
-#         return JSONResponse(status_code=status.HTTP_403_FORBIDDEN,
-#                             content={"detail": "IP address is banned"})
-#     response = await call_next(request)
-#     return response
+
+@app.middleware("http")
+async def ban_ips(request: Request, call_next: Callable):
+    # with ip_address
+    # ip = ip_address(request.client.host)
+    # print(f'1: {ip=}')
+    # ip_address ass string
+    ip = request.client.host
+    # print(f'2 {ip=}')
+    if ip in banned_ips:
+        return JSONResponse(status_code=status.HTTP_403_FORBIDDEN,
+                            content={"detail": "IP address is banned"})
+    response = await call_next(request)
+    return response
 
 
-# @app.middleware("http")
-# async def user_agent_ban(request: Request, call_next: Callable):
-#     user_agent = request.headers.get("user-agent")
-#     # print(f"User-agent: {user_agent}")
-#     for agent_banned in user_agent_ban_list:
-#         if re.search(agent_banned, user_agent):
-#             return JSONResponse(status_code=status.HTTP_403_FORBIDDEN,
-#                                 content={"detail": "User-agent is banned"}, )
-#     response = await call_next(request)
-#     return response
+@app.middleware("http")
+async def user_agent_ban(request: Request, call_next: Callable):
+    user_agent = request.headers.get("user-agent")
+    # print(f"User-agent: {user_agent}")
+    for agent_banned in user_agent_ban_list:
+        if re.search(agent_banned, user_agent):
+            return JSONResponse(status_code=status.HTTP_403_FORBIDDEN,
+                                content={"detail": "User-agent is banned"}, )
+    response = await call_next(request)
+    return response
 
 
 BASE_DIR = Path(__file__).parent
