@@ -92,6 +92,12 @@ You can modify `docker-compose.yml` to set Redis with Web GUI or not.
   uvicorn main:app --reload
   ```
 
+To start the server on all network interfaces:
+
+  ```bash
+  uuvicorn main:app --host 0.0.0.0 --reload
+  ```
+
 **use this command to see maximum debug info from server**
 
   ```bash
