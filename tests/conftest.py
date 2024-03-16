@@ -67,7 +67,12 @@ def client():
 
     app.dependency_overrides[get_db] = override_get_db
 
-    yield TestClient(app)
+    # Create the test client with the desired base URL
+    client = TestClient(app)
+    client.base_url = "http://127.0.0.1:8000"  # Set the base URL
+
+    # yield TestClient(app)
+    yield client
 
 
 @pytest_asyncio.fixture()
