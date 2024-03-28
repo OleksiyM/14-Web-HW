@@ -15,6 +15,7 @@ import re
 from ipaddress import ip_address
 from typing import Callable
 from pathlib import Path
+import uvicorn
 
 import redis.asyncio as redis
 
@@ -139,3 +140,7 @@ async def healthchecker(db: AsyncSession = Depends(get_db)):
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail="Error connecting to the database")
+
+
+if __name__ == "__main__":
+    uvicorn.run(app="main:app", host="localhost", port=8000)
