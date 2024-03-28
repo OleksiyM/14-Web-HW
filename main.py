@@ -88,16 +88,15 @@ app.include_router(contacts.router, prefix='/api')
 app.include_router(auth.router, prefix='/api')
 app.include_router(users.router, prefix='/api')
 
-
-@app.on_event("startup")
-async def startup():
-    if not config.REDIS_PASSWORD:
-        config.REDIS_PASSWORD = None
-    r = await redis.Redis(host=config.REDIS_DOMAIN,
-                          port=config.REDIS_PORT,
-                          db=0,
-                          password=config.REDIS_PASSWORD, )
-    await FastAPILimiter.init(r)
+# @app.on_event("startup")
+# async def startup():
+#     if not config.REDIS_PASSWORD:
+#         config.REDIS_PASSWORD = None
+#     r = await redis.Redis(host=config.REDIS_DOMAIN,
+#                           port=config.REDIS_PORT,
+#                           db=0,
+#                           password=config.REDIS_PASSWORD, )
+#     await FastAPILimiter.init(r)
 
 
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
